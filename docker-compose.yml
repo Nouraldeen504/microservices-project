@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  flask_service:
+    build:
+      context: ./flask_service
+    ports:
+      - "5000:5000"
+
+  go_service:
+    build:
+      context: ./go_service
+    ports:
+      - "8080:8080"
+    depends_on:
+      express_service:
+        condition: service_healthy
+
+  express_service:
+    build:
+      context: ./express_service
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
